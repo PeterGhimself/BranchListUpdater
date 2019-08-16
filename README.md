@@ -1,8 +1,11 @@
 # BranchListUpdater
 
 An attempt to help automate the process of updating branches to Github Enterprise Server slack integration.
-The main issue is that there is no feature to select _all_ branches (I've tried inputting a wildcard with `*`, but to no avail).
-The idea is to be able to link this script to a git hook when creating a new local branch or pushing a new branch to origin (this could call for removing the branch from the list when branches are deleted).
+The main issue is that there is no feature to select _all_ branches (entering `*` as a wildcard does not seem to work).
+
+Using a headless browser like `selenium` we can start automating the procedure of updating the list of branches being listened to. The idea moving forward is to be able to link this script to a git hook when creating a new local branch or pushing a new branch to origin (this could call for removing the branch from the list when branches are deleted).
+
+Ideally for the hook idea to work the email and password could be saved in a config file so that the user doesn't need always enter their email/password each time. Though my only concern there is that I don't want to encourage storing passwords in plain-text, so this will have to be accounted for maybe by using some en-/decryption method.
 
 ## Dependencies
 
