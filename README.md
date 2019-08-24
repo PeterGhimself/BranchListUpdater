@@ -35,5 +35,5 @@ You may either store your credentials in `slackconfig.py` or type them in when r
 
 **WARNING:** Currently credentials are stored in plain text in `slackconfig.py`. Hopefully this method will be replaced with a slightly more secure feature: Creating this config file dynamically so that the password entered by the user can be encrypted before being saved.
 That being said, the changes made to `slackconfig.py` won't be tracked on git (thanks to `git update-index --assume-unchanged <path-to-file>`).
-It is however recommended to change the user/group policy for `slackconfig.py` so that it's contents can only be accessed with root access.
+It is however recommended to change the user/group policy for `slackconfig.py` so that it's contents can only be accessed with root access. The file can't be 'shipped' this way since git does not track file ownership changes so you will have to do this manually yourself.
 This can be done with: `chmod 111 slackconfig.py` which will only allow the user/group to execute the file. Reading/writing of the file will only work by using root priveleges.
