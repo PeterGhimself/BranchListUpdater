@@ -6,6 +6,7 @@ import getpass
 import re
 import time
 import sys
+import slackconfig as cfg
 
 # set default name if none passed in args
 new_branch_name = 'testy'
@@ -31,43 +32,46 @@ target_url = 'https://spaceconcordiateam.slack.com/services/B2ZGUM4MV'
 driver.get(target_url)
 print('driver.title: ', driver.title)
 
-signed_in = False
-
-# just in case, check if already logged in
-try:
-    elem = driver.find_element_by_class_name('p-classic_nav__team_header__user__name__truncate')
-    print('elem: ', elem)
-
-except Exception as err:
-    print('Currently not signed in')
-    print(err)
-
 email = ''
 password = ''
 
-if not signed_in:
-    try:
-        email = driver.find_element_by_id('email')
-        print('email: ', email)
-        password = driver.find_element_by_id('password')
-        print('password: ', password)
+try:
+    # get instances
+    email = driver.find_element_by_id('email')
+    password = driver.find_element_by_id('password')
 
-    except Exception as err:
-        print('Error encountered!')
-        print(err)
+except Exception as err:
+    print('Error encountered!')
+    print(err)
 
+# check config file
+if cfg.user['email'] and cfg.user['password']:
+    print('Using user config set in slackconfig.py')
+    user_email = cfg.user['email']
+    user_password = cfg.user['password']
 
-print('Enter email: ')
-user_email = input()
+    print('email:', user_email)
+    print('password:', len(user_password) * '*')
 
-email.clear()
-email.send_keys(user_email)
+    email.clear()
+    email.send_keys(user_email)
+    password.clear()
+    password.send_keys(user_password)
+    password.send_keys(Keys.RETURN)
 
-user_password = getpass.getpass('Enter password: ')
+else:
+    print('Config file either missing user, password, or both')
+    print('Enter email: ')
+    user_email = input()
 
-password.clear()
-password.send_keys(user_password)
-password.send_keys(Keys.RETURN)
+    email.clear()
+    email.send_keys(user_email)
+
+    user_password = getpass.getpass('Enter password: ')
+
+    password.clear()
+    password.send_keys(user_password)
+    password.send_keys(Keys.RETURN)
 
 elem = ''
 
@@ -112,9 +116,6 @@ try:
 except Exception as err:
     print('Error encountered!')
     print(err)
-
-
-
 
 print('closing driver...')
 driver.close()

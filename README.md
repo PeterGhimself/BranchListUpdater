@@ -30,3 +30,10 @@ unzip chromedriver_linux64.zip
 ## How to run
 
 If all the dependencies were properly intalled and making sure your virtualenv is activated, you can run the script with: `./branch_list_updater.py`.
+If you wish to add a specificly named branch to the list, pass it in an argument like so: `./branch_list_updater.py my-awesome-branch-name`.
+You may either store your credentials in `slackconfig.py` or type them in when running the program (each time). If the config file is filled those values will be used by default.
+
+**WARNING:** Currently credentials are stored in plain text in `slackconfig.py`. Hopefully this method will be replaced with a slightly more secure feature: Creating this config file dynamically so that the password entered by the user can be encrypted before being saved.
+That being said, the changes made to `slackconfig.py` won't be tracked on git (thanks to `git update-index --assume-unchanged <path-to-file>`).
+It is however recommended to change the user/group policy for `slackconfig.py` so that it's contents can only be accessed with root access.
+This can be done with: `chmod 111 slackconfig.py` which will only allow the user/group to execute the file. Reading/writing of the file will only work by using root priveleges.
