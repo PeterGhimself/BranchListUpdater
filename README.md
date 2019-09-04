@@ -7,6 +7,10 @@ Using a headless browser like `selenium` we can start automating the procedure o
 
 Ideally for the hook idea to work the email and password could be saved in a config file so that the user doesn't need always enter their email/password each time. Though my only concern there is that I don't want to encourage storing passwords in plain-text, so this will have to be accounted for maybe by using some en-/decryption method.
 
+## Cloning
+
+Make sure to run `git update-index --skip-worktree slackconfig.py` after cloning to ensure that the changes to the config file won't be tracked.
+
 ## Dependencies
 
 The script is developed/tested with Python 3.6.8.
