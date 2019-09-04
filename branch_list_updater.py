@@ -79,6 +79,12 @@ elem = ''
 try:
     print('driver.title: ', driver.title)
 
+    if 'GitHub Enterprise Server | Slack App Directory' not in driver.title:
+        print('Sign in failed, closing driver...')
+        driver.close()
+        print('exiting script')
+        sys.exit()
+
     '''
     # One way of checking the page source for matches
     src = driver.page_source
@@ -87,7 +93,7 @@ try:
     '''
 
     # append branch name to branch list
-    print('locating branches')
+    print('locating branches...')
 
     # this method doesn't seem to be working
     #branch_list = driver.find_element_by_class_name('branches')
@@ -109,7 +115,7 @@ try:
 
     # only parent is clickable with selenium driver
     # although in js child is clickable
-    print('locating save button')
+    print('locating save button...')
     save = driver.find_element_by_id('add_integration_parent')
     save.click()
 
