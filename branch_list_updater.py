@@ -106,9 +106,14 @@ try:
     print('set_branches', set_branches)
     get_branches = "return " + branches_val
     driver.execute_script(set_branches)
+    updated_branch_list = driver.execute_script(get_branches)
 
     # visual confirmation
-    print('updated branch list: ', driver.execute_script(get_branches))
+    print('updated branch list: ', updated_branch_list)
+
+    # save list to file
+    with open('updated_branch_list', 'w+') as f:
+        f.write(updated_branch_list + "\n")
 
     # necessary wait, otherwise save button gets clicked too fast to actually work
     time.sleep(0.5)
