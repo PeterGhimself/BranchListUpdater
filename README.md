@@ -19,7 +19,7 @@ The script is developed/tested with Python 3.6.8.
 
 It is suggested to use a virtual environment, as the `selenium` package is needed.
 
-1. Create a new virtual environment with: `virtualenv -p `which python3.6 venv`, activate it with `. venv/bin/activate`. You should see `(venv)` prepended to your `user@hostname`.
+1. Create a new virtual environment with: ```virtualenv -p `which python3.6` venv```, activate it with `. venv/bin/activate`. You should see `(venv)` prepended to your `user@hostname`.
 
 2. With your venv activated, install python packages in `requirements.txt`: `pip install -r requirements.txt`
 
