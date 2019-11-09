@@ -101,7 +101,22 @@ try:
 
     # so let's try javscripting this instead
     print('inserting value: ', new_branch_name)
-    branches_val = "document.getElementsByName('branches[]')[1].value"
+    #TODO: try to implement it properly as shown in 'get_branch_list.js' vs this hack
+    branches_val = "document.getElementsByName('branches[]')[2].value"
+
+    # for the TODO fix mentioned above
+    """branches_val = ''
+    with open('./get_branch_list.js', 'r') as js:
+        # 3) Read the jquery from a file
+        branches_val = js.read()
+
+    get_branches = "return " + branches_val
+    updated_branch_list = driver.execute_script(get_branches)
+
+    # visual confirmation
+    print('updated branch list: ', updated_branch_list)
+    """
+
     set_branches = branches_val + " += ', " + new_branch_name + "'"
     print('set_branches', set_branches)
     get_branches = "return " + branches_val
