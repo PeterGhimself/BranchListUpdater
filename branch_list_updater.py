@@ -10,15 +10,30 @@ import slackconfig as cfg
 
 # set default name if none passed in args
 new_branch_name = 'testy'
+# in case multiple branch names passed at once
+new_branch_names = []
+
+# if passing multiple branch names then as a single string
+# with comma separated values and no spaces
+MULTI_ARG_DELIMETER = ','
 
 if len(sys.argv) > 1:
     new_branch_name = sys.argv[1]
+
+    # check if multiple branch names
+    if MULTI_ARG_DELIMETER in new_branch_name:
+        print('Multiple branch names detected')
+        new_branch_names = new_branch_name.split(MULTI_ARG_DELIMETER)
+        # remove duplicates
+        new_branch_names = list(dict.fromkeys(new_branch_names))
+
+        for branch in new_branch_names:
+            print("Found: " + branch)
 
 current_dir = os.path.dirname(os.path.realpath(__file__)) + '/'
 chromedriver_path = current_dir + 'chromedriver'
 print('chromedriver_path: ', chromedriver_path)
 
-# Option 1 - with ChromeOptions
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no=sandbox") # required when running as root user. otherwise you would get no sandbox errors.
@@ -30,7 +45,7 @@ driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chro
 target_url = 'https://spaceconcordiateam.slack.com/services/B2ZGUM4MV'
 
 driver.get(target_url)
-print('driver.title: ', driver.title)
+print('Page title: ', driver.title)
 
 email = ''
 password = ''
@@ -50,8 +65,7 @@ if cfg.user['email'] and cfg.user['password']:
     user_email = cfg.user['email']
     user_password = cfg.user['password']
 
-    print('email:', user_email)
-    print('password:', len(user_password) * '*')
+    print('Using email:', user_email)
 
     email.clear()
     email.send_keys(user_email)
@@ -77,7 +91,7 @@ elem = ''
 
 # check to see if login worked
 try:
-    print('driver.title: ', driver.title)
+    print('Login success, on page: ', driver.title)
 
     if 'GitHub Enterprise Server | Slack App Directory' not in driver.title:
         print('Sign in failed, closing driver...')
@@ -116,8 +130,13 @@ try:
     # visual confirmation
     print('updated branch list: ', updated_branch_list)
     """
-
-    set_branches = branches_val + " += ', " + new_branch_name + "'"
+    set_branches = branches_val + " += '"
+    if len(new_branch_names) > 0:
+        for branch in new_branch_names:
+            set_branches += ', ' + branch
+        set_branches += "'"
+    else:
+        set_branches = branches_val + " += ', " + new_branch_name + "'"
     print('set_branches', set_branches)
     get_branches = "return " + branches_val
     driver.execute_script(set_branches)
