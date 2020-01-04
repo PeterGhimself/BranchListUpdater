@@ -4,7 +4,7 @@ new_branch_rgx="[new branch]"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
 NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
-LAST_PULL_LOG="SCRIPT_PATH/last_pull_result.log"
+LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
 
 function join_by {
   local IFS="$1"
