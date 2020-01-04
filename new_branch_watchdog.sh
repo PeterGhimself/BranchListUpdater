@@ -5,6 +5,9 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
 NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
 LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
+TARGET_REL_PATH="$1"
+# will default to the BranchListUpdater repo if none given
+TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
 
 function join_by {
   local IFS="$1"
@@ -12,10 +15,20 @@ function join_by {
   echo "$*"
 }
 
+if [ -d "$TARGET_REPO" ]
+then
+    echo "Using target repo: $TARGET_REPO"
+else
+    echo "Error: Directory $TARGET_REPO does not exist, aborting."
+    exit 1
+fi
+
 while :
 do
   # loop infinitely
+  cd "$TARGET_REPO"
   pull_result=$(git pull 2>&1)
+  cd "$SCRIPT_REPO"
   echo "$pull_result"
   echo "$pull_result" > $LAST_PULL_LOG
 
