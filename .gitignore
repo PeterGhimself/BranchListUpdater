@@ -2,4 +2,5 @@
 **/venv
 **/__pycache__
 **/updated_branch_list
-**/new_branch.txt
+**/last_pull_result.log
+**/new_branches.txt
