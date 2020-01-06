@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 
-new_branch_rgx="[new branch]"
-SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
-NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
-LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
-# event: on branch detection
-EVENTS_LOG="$SCRIPT_PATH/events.log"
-TARGET_REL_PATH="$1"
-# will default to the BranchListUpdater repo if none given
-TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
-
 function join_by {
   local IFS="$1"
   shift
@@ -20,6 +9,28 @@ function join_by {
 timestamp() {
   date +"%Y-%m-%d %T"
 }
+
+new_branch_rgx="[new branch]"
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
+NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
+LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
+# event: on branch detection
+EVENTS_LOG="$SCRIPT_PATH/events.log"
+
+# will default to the BranchListUpdater repo if none given
+TARGET_REL_PATH="$1"
+TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
+
+# default is 1m
+SLEEP_TIME="1m"
+
+if [[ $# -eq 2 ]]
+then
+    echo "ARGUMENT PROVIDE FOR SLEEP TIME"
+    #@TODO: add validation?
+    SLEEP_TIME="$2"
+fi
 
 if [ -d "$TARGET_REPO" ]
 then
@@ -74,8 +85,8 @@ do
     echo "No new branches detected"
   fi
 
-  echo "sleeping for a minute"
+  echo "sleeping for: $SLEEP_TIME"
   echo "zzzzzzzZzzzzzzzzzzzzz"
-  sleep 1m
+  sleep "$SLEEP_TIME"
 done
 
