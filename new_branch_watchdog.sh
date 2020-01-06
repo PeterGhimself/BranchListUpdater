@@ -27,9 +27,11 @@ SLEEP_TIME="1m"
 
 if [[ $# -eq 2 ]]
 then
-    echo "ARGUMENT PROVIDE FOR SLEEP TIME"
     #@TODO: add validation?
     SLEEP_TIME="$2"
+    echo "Using provided sleep time: $SLEEP_TIME"
+else
+    echo "Using default sleep time: $SLEEP_TIME"
 fi
 
 if [ -d "$TARGET_REPO" ]
