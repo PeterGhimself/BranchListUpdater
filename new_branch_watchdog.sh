@@ -5,6 +5,8 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
 NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
 LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
+# event: on branch detection
+EVENTS_LOG="$SCRIPT_PATH/events.log"
 TARGET_REL_PATH="$1"
 # will default to the BranchListUpdater repo if none given
 TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
@@ -13,6 +15,10 @@ function join_by {
   local IFS="$1"
   shift
   echo "$*"
+}
+
+timestamp() {
+  date +"%Y-%m-%d %T"
 }
 
 if [ -d "$TARGET_REPO" ]
@@ -52,9 +58,18 @@ do
     # join by delimiter ',' as branch_list_updater.py expects it
     branches=`join_by , ${branches[@]}`
 
-    echo "New branches detected: $branches"
-    echo "Running branch_list_updater.py with arg: $branches"
+    feedback="New branches detected: $branches"
+    feedback+=$'\nRunning branch_list_updater.py with arg: '
+    feedback+="$branches"
+    feedback+=$'\nStarted job at: '
+    feedback+=`timestamp`
+    #feedback+=$'\n'
+    echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
     python $PATH_TO_UPDATER "$branches"
+    feedback="Finished job at: "
+    feedback+=`timestamp`
+    feedback+=$'\n'
+    echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
   else
     echo "No new branches detected"
   fi
