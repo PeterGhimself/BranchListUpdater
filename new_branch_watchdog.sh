@@ -25,6 +25,9 @@ TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
 # default is 1m
 SLEEP_TIME="1m"
 
+# for fun
+SLEEPY_DOG="💤(-ᴥ-ʋ)"
+
 if [[ $# -eq 2 ]]
 then
     #@TODO: add validation?
@@ -88,7 +91,8 @@ do
   fi
 
   echo "sleeping for: $SLEEP_TIME"
-  echo "zzzzzzzZzzzzzzzzzzzzz"
+  echo "$SLEEPY_DOG"
+  echo "zzzzzzzzzzZzZzZzzzzz"
   sleep "$SLEEP_TIME"
 done
 
