@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#@TODO: check against results of `git branch -a -r`
+# to ensure user isn't trying to create branch that already exists
 branch_name="test$1"
 
 git checkout master
