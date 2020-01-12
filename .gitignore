@@ -5,3 +5,5 @@
 **/last_pull_result.log
 **/new_branches.txt
 **/events.log
+**/.app.properties
+**/index.php
