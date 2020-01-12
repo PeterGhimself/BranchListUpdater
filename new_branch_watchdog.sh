@@ -15,7 +15,7 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
 NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
 LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
-# event: on branch detection
+# logging events on branch detection
 EVENTS_LOG="$SCRIPT_PATH/events.log"
 
 # will default to the BranchListUpdater repo if none given
@@ -27,6 +27,20 @@ SLEEP_TIME="1m"
 
 # for fun
 SLEEPY_DOG="💤(-ᴥ-ʋ)"
+
+# flag for updating the list of branches
+FLAG_NO_UPDATE="--no-update"
+FLAG_NO_UPDATE_SHORTCUT="-n"
+NO_UPDATE_MSG="Running without updating"
+update=true
+
+USAGE="usage: ./new_branch_watchdog.sh [relpath] [-2m] [--no-update|-n]
+            relpath: relative path to repository root
+            2m: check at 2 minute intervals (default: 1m)
+            $FLAG_NO_UPDATE or $FLAG_NO_UPDATE_SHORTCUT: for not updating the branch list but still logging new branch events
+
+The arguments must be provided in the order shown.
+"
 
 if [[ $# -eq 2 ]]
 then
@@ -42,8 +56,21 @@ then
     echo "Using target repo: $TARGET_REPO"
 else
     echo "Error: Directory $TARGET_REPO does not exist, aborting."
+    echo "$USAGE"
     exit 1
 fi
+
+# check if flag --no-update or -n are present
+while test $# -gt 0
+do
+    case "$1" in
+        --no-update) echo "$NO_UPDATE_MSG"; update=false
+            ;;
+        -n) echo "$NO_UPDATE_MSG"; update=false
+            ;;
+    esac
+    shift
+done
 
 while :
 do
@@ -75,15 +102,18 @@ do
     branches=`join_by , ${branches[@]}`
 
     feedback="New branches detected: $branches"
-    feedback+=$'\nRunning branch_list_updater.py with arg: '
-    feedback+="$branches"
-    feedback+=$'\nStarted job at: '
-    feedback+=`timestamp`
-    #feedback+=$'\n'
-    echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
-    python $PATH_TO_UPDATER "$branches"
-    feedback="Finished job at: "
-    feedback+=`timestamp`
+
+    if [[ $update ]]; then
+        feedback+=$'\nRunning branch_list_updater.py with arg: '
+        feedback+="$branches"
+        feedback+=$'\nStarted job at: '
+        feedback+=`timestamp`
+        #feedback+=$'\n'
+        echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
+        python $PATH_TO_UPDATER "$branches"
+        feedback="Finished job at: "
+        feedback+=`timestamp`
+    fi
     feedback+=$'\n'
     echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
   else
