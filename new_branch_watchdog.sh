@@ -108,7 +108,7 @@ do
 
     feedback="New branches detected: $branches"
 
-    if [[ $update ]]; then
+    if [[ $update = true ]]; then
         feedback+=$'\nRunning branch_list_updater.py with arg: '
         feedback+="$branches"
         feedback+=$'\nStarted job at: '
