@@ -18,6 +18,11 @@ LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
 # logging events on branch detection
 EVENTS_LOG="$SCRIPT_PATH/events.log"
 
+# extra custom scripts to be run when new branches detected
+# the script names are assumed to be provided line by line
+# as well as providing their respective shebang lines
+SCRIPTS="scripts.txt"
+
 # will default to the BranchListUpdater repo if none given
 TARGET_REL_PATH="$1"
 TARGET_REPO="$SCRIPT_PATH/$TARGET_REL_PATH"
@@ -113,9 +118,17 @@ do
         python $PATH_TO_UPDATER "$branches"
         feedback="Finished job at: "
         feedback+=`timestamp`
+        feedback+=$'\n'
+        echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
+        
+        if [ -f "$SCRIPTS" ]
+        then
+            echo "$SCRIPTS found, running custom jobs"
+            while read p; do
+                ./"$p"
+            done <"$SCRIPTS"
+        fi
     fi
-    feedback+=$'\n'
-    echo "$feedback" >> $EVENTS_LOG ; echo "$feedback"
   else
     echo "No new branches detected"
   fi
