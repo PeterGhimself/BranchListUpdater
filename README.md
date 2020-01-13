@@ -11,11 +11,11 @@ Ideally for the hook idea to work the email and password could be saved in a con
 
 Make sure to run `git update-index --skip-worktree slackconfig.py` after cloning to ensure that the changes to the config file won't be tracked.
 
-## Dependencies
+## Dependencies/Setup
 
-The script is developed/tested with Python 3.6.8.
+The scripts are developed/tested with Python 3.6.8 and bash 4.3.48.
 
-### Linux
+### Linux (currently only supported option)
 
 It is suggested to use a virtual environment, as the `selenium` package is needed.
 
@@ -30,6 +30,7 @@ cd /path/to/BranchListUpdater
 wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 ```
+4. [Optional] If you plan on using the `update_page.sh` script, you need to install `sshpass`. On debian with: `sudo apt-get install sshpass`.
 
 ## How to run
 
