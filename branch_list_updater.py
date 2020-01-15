@@ -6,6 +6,7 @@ import getpass
 import re
 import time
 import sys
+import traceback
 import slackconfig as cfg
 
 # set default name if none passed in args
@@ -58,6 +59,7 @@ try:
 except Exception as err:
     print('Error encountered!')
     print(err)
+    traceback.print_exc()
 
 # check config file
 if cfg.user['email'] and cfg.user['password']:
@@ -161,6 +163,7 @@ try:
 except Exception as err:
     print('Error encountered!')
     print(err)
+    traceback.print_exc()
 
 print('closing driver...')
 driver.close()
