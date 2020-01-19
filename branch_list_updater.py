@@ -18,18 +18,51 @@ new_branch_names = []
 # with comma separated values and no spaces
 MULTI_ARG_DELIMETER = ','
 
+# list option variables
+list_branches = False
+LIST_FLAGS = ['--list', '-l']
+## user feedback messages
+UPDATE_MODE_MSG = 'Update mode selected'
+LIST_MODE_MSG = 'List mode selected'
+LIST_FLAG_TYPO_MSG = 'Did you mean --list or -l? '
+EXIT_PROMPT = 'q to quit now '
+USER_INPUT_OPTIONS = '(y/n/q): '
+EXIT_OPTION_MSG = 'Exiting script'
+
+# file meant to keep track of the latest branch values
+# gets overwritten very time branches are updated/listed
+BRANCH_LIST_FILE = 'updated_branch_list'
+
+#@TODO: add usage string
+#@TODO: search and replace (given an empty string to replace with, delete that entry)
+
 if len(sys.argv) > 1:
     new_branch_name = sys.argv[1]
 
-    # check if multiple branch names
-    if MULTI_ARG_DELIMETER in new_branch_name:
-        print('Multiple branch names detected')
-        new_branch_names = new_branch_name.split(MULTI_ARG_DELIMETER)
-        # remove duplicates
-        new_branch_names = list(dict.fromkeys(new_branch_names))
+    if new_branch_name in LIST_FLAGS:
+        list_branches = True
+        print(LIST_MODE_MSG)
+    # try to catch typos
+    elif 'list' in new_branch_name:
+        answer = input(LIST_FLAG_TYPO_MSG + '\n' + EXIT_PROMPT + USER_INPUT_OPTIONS)
+        if answer.lower() == 'y':
+            list_branches = True
+            print(LIST_MODE_MSG)
+        elif answer.lower() == 'q':
+            print(EXIT_OPTION_MSG)
+            sys.exit(0)
+        else:
+            print(UPDATE_MODE_MSG)
+    else:
+        # check if multiple branch names
+        if MULTI_ARG_DELIMETER in new_branch_name:
+            print('Multiple branch names detected')
+            new_branch_names = new_branch_name.split(MULTI_ARG_DELIMETER)
+            # remove duplicates
+            new_branch_names = list(dict.fromkeys(new_branch_names))
 
-        for branch in new_branch_names:
-            print("Found: " + branch)
+            for branch in new_branch_names:
+                print("Found: " + branch)
 
 current_dir = os.path.dirname(os.path.realpath(__file__)) + '/'
 chromedriver_path = current_dir + 'chromedriver'
@@ -43,6 +76,7 @@ driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chro
 
 # directly go to github enterprise server integration settings page, which will first redirect to login page
 # after succesful login we should hit the 'Github Enterprise Server | Slack App Directory' page
+#@TODO: this should be read from a property in a config file
 target_url = 'https://spaceconcordiateam.slack.com/services/B2ZGUM4MV'
 
 driver.get(target_url)
@@ -120,45 +154,57 @@ try:
     #TODO: try to implement it properly as shown in 'get_branch_list.js' vs this hack
     branches_val = "document.getElementsByName('branches[]')[2].value"
 
-    # for the TODO fix mentioned above
-    """branches_val = ''
-    with open('./get_branch_list.js', 'r') as js:
-        # 3) Read the jquery from a file
-        branches_val = js.read()
+    
+    if list_branches:
+        get_branches = 'return ' + branches_val 
+        branch_list = driver.execute_script(get_branches)
+        print('listing current branches:')
+        print(branch_list)
 
-    get_branches = "return " + branches_val
-    updated_branch_list = driver.execute_script(get_branches)
+        # save list to file
+        with open(BRANCH_LIST_FILE, 'w+') as f:
+            f.write(branch_list + "\n")
 
-    # visual confirmation
-    print('updated branch list: ', updated_branch_list)
-    """
-    set_branches = branches_val + " += '"
-    if len(new_branch_names) > 0:
-        for branch in new_branch_names:
-            set_branches += ', ' + branch
-        set_branches += "'"
     else:
-        set_branches = branches_val + " += ', " + new_branch_name + "'"
-    print('set_branches', set_branches)
-    get_branches = "return " + branches_val
-    driver.execute_script(set_branches)
-    updated_branch_list = driver.execute_script(get_branches)
+        # for the TODO fix mentioned above
+        """branches_val = ''
+        with open('./get_branch_list.js', 'r') as js:
+            # 3) Read the jquery from a file
+            branches_val = js.read()
 
-    # visual confirmation
-    print('updated branch list: ', updated_branch_list)
+        get_branches = "return " + branches_val
+        updated_branch_list = driver.execute_script(get_branches)
 
-    # save list to file
-    with open('updated_branch_list', 'w+') as f:
-        f.write(updated_branch_list + "\n")
+        # visual confirmation
+        print('updated branch list: ', updated_branch_list)
+        """
+        set_branches = branches_val + " += '"
+        if len(new_branch_names) > 0:
+            for branch in new_branch_names:
+                set_branches += ', ' + branch
+            set_branches += "'"
+        else:
+            set_branches = branches_val + " += ', " + new_branch_name + "'"
+        print('set_branches', set_branches)
+        get_branches = "return " + branches_val
+        driver.execute_script(set_branches)
+        updated_branch_list = driver.execute_script(get_branches)
 
-    # necessary wait, otherwise save button gets clicked too fast to actually work
-    time.sleep(0.5)
+        # visual confirmation
+        print('updated branch list: ', updated_branch_list)
 
-    # only parent is clickable with selenium driver
-    # although in js child is clickable
-    print('locating save button...')
-    save = driver.find_element_by_id('add_integration_parent')
-    save.click()
+        # save list to file
+        with open(BRANCH_LIST_FILE, 'w+') as f:
+            f.write(updated_branch_list + "\n")
+
+        # necessary wait, otherwise save button gets clicked too fast to actually work
+        time.sleep(0.5)
+
+        # only parent is clickable with selenium driver
+        # although in js child is clickable
+        print('locating save button...')
+        save = driver.find_element_by_id('add_integration_parent')
+        save.click()
 
 except Exception as err:
     print('Error encountered!')
