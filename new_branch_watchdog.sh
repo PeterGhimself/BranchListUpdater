@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function join_by {
+join_by() {
   local IFS="$1"
   shift
   echo "$*"
@@ -15,13 +15,15 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PATH_TO_UPDATER="$SCRIPT_PATH/branch_list_updater.py"
 NEW_BRANCHES="$SCRIPT_PATH/new_branches.txt"
 LAST_PULL_LOG="$SCRIPT_PATH/last_pull_result.log"
-# logging events on branch detection
+# log events on branch detection
 EVENTS_LOG="$SCRIPT_PATH/events.log"
+# log extra (optional) post-event scripts
+POST_EVENTS_LOG="$SCRIPT_PATH/post_events.log"
 
 # extra custom scripts to be run when new branches detected
 # the script names are assumed to be provided line by line
 # as well as providing their respective shebang lines
-SCRIPTS="scripts.txt"
+SCRIPTS="$SCRIPT_PATH/scripts.txt"
 
 # will default to the BranchListUpdater repo if none given
 TARGET_REL_PATH="$1"
@@ -81,6 +83,8 @@ while :
 do
   # loop infinitely
   cd "$TARGET_REPO"
+  # ensure we always pull from master
+  git checkout master
   pull_result=$(git pull 2>&1)
   cd "$SCRIPT_REPO"
   echo "$pull_result"
@@ -108,6 +112,9 @@ do
 
     feedback="New branches detected: $branches"
 
+    # return back home to run optional scripts
+    cd $SCRIPT_PATH
+
     if [[ $update = true ]]; then
         feedback+=$'\nRunning branch_list_updater.py with arg: '
         feedback+="$branches"
@@ -125,9 +132,11 @@ do
         then
             echo "$SCRIPTS found, running custom jobs"
             while read p; do
-                ./"$p"
+                . "$SCRIPT_PATH/$p" > $POST_EVENTS_LOG
             done <"$SCRIPTS"
-        fi
+        else
+	    echo "$SCRIPTS not found, no custom jobs to run"
+	fi
     fi
   else
     echo "No new branches detected"

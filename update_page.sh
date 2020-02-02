@@ -4,8 +4,9 @@
 # which can be installed with yum/dnf/apt-get install sshpass
 # tested on ubuntu 16.04
 
-EVENTS_LOG="events.log"
-PROPERTIES=".app.properties"
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+EVENTS_LOG="$SCRIPT_PATH/events.log"
+PROPERTIES="$SCRIPT_PATH/.app.properties"
 
 if [ -f "$EVENTS_LOG" ]
 then
@@ -56,5 +57,3 @@ cat "$MAIN_PAGE"
 echo ""
 
 sshpass -p "$password" scp $MAIN_PAGE $username@$host:$apache_dir/$username
-
-exit 0
