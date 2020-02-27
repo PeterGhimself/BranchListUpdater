@@ -11,6 +11,10 @@ import slackconfig as cfg
 import logging
 from datetime import datetime
 
+#@TODO: REMINDER
+# IMPLEMENT A QUEUE SINCE WHEN INTERNET FAILS
+# THERE IS NO WAY TO RECOVER BRANCHES THAT ARE NOT PUSHED
+
 # branch list updater output log file
 OUTPUT_LOG = 'blu_out.log'
 
